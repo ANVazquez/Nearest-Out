@@ -1,11 +1,29 @@
 extends Area2D
 
+const SPEED = 100
+
+var velocity = Vector2()
+var direction = 1
 
 func _ready():
 	pass
 
-func _physics_process(delta):
-	$AnimatedSprite.play("spinning")
+func direction_of_arrow(direct):
+	direction = direct
+	if direct == -1:
+		$AnimatedSprite.flip_h = true
 
-func _on_coin_body_entered(body):
+func _physics_process(delta):
+	velocity.x = SPEED * delta * direction
+	translate(velocity)
+	$AnimatedSprite.play("arrow")
+
+#distroys the arrow when it exits screen
+func _on_VisibilityNotifier2D_screen_exited():
+	queue_free()
+
+#this is going to detect if the arrow hits a wall
+func _on_arrow_body_entered(body):
+	if "Minotaur" in body.name || "grey" in body.name:
+		body.dead()
 	queue_free()
